@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+explorations/*/data/*.json
+.DS_Store
+
+# figures are tracked on purpose so notes.md renders on GitHub
