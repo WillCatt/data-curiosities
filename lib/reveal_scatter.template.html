@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Simpson's Paradox — the age reveal</title>
+<title>__TITLE__</title>
 <style>
   :root {
     --bg: #faf8f4; --ink: #1a1714; --muted: #7a6e63; --grid: #e6ded2;
@@ -13,40 +13,39 @@
   body {
     margin: 0; background: var(--bg); color: var(--ink);
     font-family: ui-sans-serif, system-ui, "Helvetica Neue", Arial, sans-serif;
-    display: flex; justify-content: center; padding: 32px 16px;
+    display: flex; justify-content: center; padding: 28px 16px;
   }
   .card { width: 100%; max-width: 760px; }
-  h1 { font-size: 1.4rem; margin: 0 0 .25rem; }
-  p.lede { color: var(--muted); margin: 0 0 1.25rem; max-width: 60ch; }
+  h1 { font-size: 1.3rem; margin: 0 0 .25rem; }
+  p.lede { color: var(--muted); margin: 0 0 1.1rem; max-width: 62ch; }
+  p.lede strong { color: var(--ink); }
   .controls { display: flex; align-items: center; gap: 14px; margin: 6px 0 4px; }
-  .controls label { font-weight: 600; font-size: .95rem; white-space: nowrap; }
+  .controls label { font-weight: 600; font-size: .92rem; white-space: nowrap; }
   input[type=range] { flex: 1; accent-color: var(--amber); }
-  .state { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; min-width: 7.5ch; }
+  .state { font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9rem; min-width: 8ch; }
   svg { width: 100%; height: auto; display: block; }
   .axis { stroke: var(--grid); stroke-width: 1; }
   .axislabel { fill: var(--muted); font-size: 12px; }
-  .callout { fill: var(--ink); font-size: 13px; font-weight: 600; }
+  .callout { font-size: 13px; font-weight: 600; }
   .hint { color: var(--muted); font-size: .85rem; margin-top: .4rem; }
-  footer { color: var(--muted); font-size: .8rem; margin-top: 1.4rem; }
+  footer { color: var(--muted); font-size: .8rem; margin-top: 1.2rem; }
 </style>
 </head>
 <body>
 <div class="card">
-  <h1>More exercise, higher blood sugar?</h1>
-  <p class="lede">Drag the slider from <strong>Ignore age</strong> to <strong>Reveal age</strong>.
-    The single upward trend splits into three age bands — and every one of them slopes
-    <em>down</em>. Same data, opposite story.</p>
+  <h1>__TITLE__</h1>
+  <p class="lede">__LEDE__</p>
 
   <div class="controls">
-    <label for="reveal">Ignore age</label>
+    <label id="leftLabel">__LEFT__</label>
     <input id="reveal" type="range" min="0" max="100" value="0" />
-    <label for="reveal">Reveal age</label>
+    <label id="rightLabel">__RIGHT__</label>
   </div>
-  <div class="state" id="state">pooled view</div>
+  <div class="state" id="state"></div>
 
-  <svg id="chart" viewBox="0 0 760 470" role="img" aria-label="Exercise versus blood sugar"></svg>
-  <div class="hint">Illustrative synthetic data — the real documented cases are in <code>notes.md</code>.</div>
-  <footer>Data Curiosities · 01 — Simpson's Paradox · williamcatt.dev</footer>
+  <svg id="chart" viewBox="0 0 760 470" role="img"></svg>
+  <div class="hint">__HINT__</div>
+  <footer>__FOOTER__</footer>
 </div>
 
 <script>
@@ -55,35 +54,32 @@ const DATA = __DATA__;
 const svg = document.getElementById("chart");
 const NS = "http://www.w3.org/2000/svg";
 const W = 760, H = 470;
-const M = { l: 62, r: 18, t: 18, b: 52 };
+const M = { l: 64, r: 18, t: 18, b: 52 };
 const plotW = W - M.l - M.r, plotH = H - M.t - M.b;
 
 const [x0, x1] = DATA.domain.x, [y0, y1] = DATA.domain.y;
 const sx = v => M.l + (v - x0) / (x1 - x0) * plotW;
 const sy = v => M.t + (1 - (v - y0) / (y1 - y0)) * plotH;
 
-const GREY = "#cdbfae", AMBER = "#b06a16", MUTED = "#7a6e63", GRID = "#e6ded2";
+const GREY = "#cdbfae", AMBER = "#b06a16", MUTED = "#7a6e63";
 
 function hexToRgb(h){ h=h.replace('#',''); return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16)); }
 function lerp(a,b,t){ return a+(b-a)*t; }
 function mix(h1,h2,t){ const a=hexToRgb(h1),b=hexToRgb(h2);
   return `rgb(${a.map((v,i)=>Math.round(lerp(v,b[i],t))).join(',')})`; }
-
 function el(name, attrs){ const e=document.createElementNS(NS,name);
   for(const k in attrs) e.setAttribute(k, attrs[k]); return e; }
 
-// static layer: axes + labels (drawn once)
 function drawAxes(){
   svg.appendChild(el("line",{class:"axis",x1:M.l,y1:M.t,x2:M.l,y2:M.t+plotH}));
   svg.appendChild(el("line",{class:"axis",x1:M.l,y1:M.t+plotH,x2:M.l+plotW,y2:M.t+plotH}));
   const xl = el("text",{class:"axislabel","text-anchor":"middle",x:M.l+plotW/2,y:H-12});
   xl.textContent = DATA.xLabel; svg.appendChild(xl);
   const yl = el("text",{class:"axislabel","text-anchor":"middle",
-    transform:`translate(16,${M.t+plotH/2}) rotate(-90)`});
+    transform:`translate(15,${M.t+plotH/2}) rotate(-90)`});
   yl.textContent = DATA.yLabel; svg.appendChild(yl);
 }
 
-// dynamic layer redrawn on slider move
 const dyn = el("g",{});
 drawAxes();
 svg.appendChild(dyn);
@@ -92,34 +88,27 @@ function lineSeg(m,b,xa,xb,color,opacity,width){
   return el("line",{x1:sx(xa),y1:sy(m*xa+b),x2:sx(xb),y2:sy(m*xb+b),
     stroke:color,"stroke-width":width,"stroke-opacity":opacity,"stroke-linecap":"round"});
 }
-
 function bandExtent(bi){
   let lo=Infinity, hi=-Infinity;
   for(const p of DATA.points) if(p.band===bi){ lo=Math.min(lo,p.x); hi=Math.max(hi,p.x); }
   return [lo,hi];
 }
 
-function render(t){  // t in [0,1]
+function render(t){
   dyn.replaceChildren();
-  // points: grey -> band colour
   for(const p of DATA.points){
     const col = mix(GREY, DATA.bandColors[p.band], t);
-    dyn.appendChild(el("circle",{cx:sx(p.x),cy:sy(p.y),r:3.6,fill:col,
-      "fill-opacity":0.9-0.05*t}));
+    dyn.appendChild(el("circle",{cx:sx(p.x),cy:sy(p.y),r:3.6,fill:col,"fill-opacity":0.9-0.05*t}));
   }
-  // pooled line fades out
   if(t < 0.999){
-    dyn.appendChild(lineSeg(DATA.pooled.m, DATA.pooled.b, x0+0.4, x1-0.4,
-      AMBER, 1-t, 3.4));
+    dyn.appendChild(lineSeg(DATA.pooled.m, DATA.pooled.b, x0+0.4*(x1-x0)/8, x1-0.4*(x1-x0)/8, AMBER, 1-t, 3.4));
   }
-  // band lines fade in
   DATA.bandFits.forEach((f,i)=>{
     const [xa,xb] = bandExtent(i);
     dyn.appendChild(lineSeg(f.m, f.b, xa, xb, DATA.bandColors[i], t, 3.4));
   });
-  // callout
   const txt = el("text",{class:"callout","text-anchor":"end",x:W-M.r,y:M.t+plotH-10});
-  txt.textContent = t < 0.5 ? "↗ pooled trend slopes up" : "↘ every age band slopes down";
+  txt.textContent = t < 0.5 ? DATA.calloutPooled : DATA.calloutSplit;
   txt.setAttribute("fill", t < 0.5 ? AMBER : MUTED);
   dyn.appendChild(txt);
 }
@@ -129,7 +118,7 @@ const stateEl = document.getElementById("state");
 function update(){
   const t = slider.value/100;
   render(t);
-  stateEl.textContent = t<0.05 ? "pooled view" : t>0.95 ? "split by age" : `revealing… ${slider.value}%`;
+  stateEl.textContent = t<0.05 ? DATA.statePooled : t>0.95 ? DATA.stateSplit : `${slider.value}%`;
 }
 slider.addEventListener("input", update);
 update();

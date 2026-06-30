@@ -22,6 +22,8 @@ GREY = "#cdbfae"    # non-highlighted
 GREEN = "#3a8f57"   # safe / "after"
 TEAL = "#2a8f8f"
 RED = "#b3402a"
+PURPLE = "#7e57c2"
+GOLD = "#c89a3c"
 
 PALETTE = {
     "bg": BG, "ink": INK, "muted": MUTED, "grid": GRID,
@@ -29,7 +31,7 @@ PALETTE = {
 }
 
 # A small ordered set of band colours for "split by group" charts.
-BAND_COLORS = [AMBER, TEAL, GREEN, RED]
+BAND_COLORS = [AMBER, TEAL, GREEN, PURPLE, RED, GOLD]
 
 
 def apply_rcParams() -> None:

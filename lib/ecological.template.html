@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>__TITLE__</title>
+<style>
+  :root { --bg:#faf8f4; --ink:#1a1714; --muted:#7a6e63; --grid:#e6ded2; --amber:#b06a16; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font-family: ui-sans-serif, system-ui, "Helvetica Neue", Arial, sans-serif;
+    display:flex; justify-content:center; padding:28px 16px; }
+  .card { width:100%; max-width:760px; }
+  h1 { font-size:1.3rem; margin:0 0 .25rem; }
+  p.lede { color:var(--muted); margin:0 0 1.1rem; max-width:62ch; }
+  p.lede strong { color:var(--ink); }
+  .controls { display:flex; align-items:center; gap:14px; margin:6px 0 4px; }
+  .controls label { font-weight:600; font-size:.92rem; white-space:nowrap; }
+  input[type=range] { flex:1; accent-color:var(--amber); }
+  .state { color:var(--muted); font-size:.9rem; min-width:10ch; }
+  svg { width:100%; height:auto; display:block; }
+  .axis { stroke:var(--grid); stroke-width:1; }
+  .axislabel { fill:var(--muted); font-size:12px; }
+  .callout { font-size:13px; font-weight:600; }
+  .hint { color:var(--muted); font-size:.85rem; margin-top:.4rem; }
+  footer { color:var(--muted); font-size:.8rem; margin-top:1.2rem; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>__TITLE__</h1>
+  <p class="lede">__LEDE__</p>
+  <div class="controls">
+    <label>__LEFT__</label>
+    <input id="reveal" type="range" min="0" max="100" value="0" />
+    <label>__RIGHT__</label>
+  </div>
+  <div class="state" id="state"></div>
+  <svg id="chart" viewBox="0 0 760 470" role="img"></svg>
+  <div class="hint">__HINT__</div>
+  <footer>__FOOTER__</footer>
+</div>
+<script>
+const DATA = __DATA__;
+const svg = document.getElementById("chart");
+const NS = "http://www.w3.org/2000/svg";
+const W=760,H=470,M={l:64,r:18,t:18,b:52};
+const plotW=W-M.l-M.r, plotH=H-M.t-M.b;
+const [x0,x1]=DATA.domain.x,[y0,y1]=DATA.domain.y;
+const sx=v=>M.l+(v-x0)/(x1-x0)*plotW, sy=v=>M.t+(1-(v-y0)/(y1-y0))*plotH;
+const GREY="#cdbfae", AMBER="#b06a16", TEAL="#2a8f8f", MUTED="#7a6e63";
+function el(n,a){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);return e;}
+function seg(m,b,xa,xb,c,o,w){return el("line",{x1:sx(xa),y1:sy(m*xa+b),x2:sx(xb),y2:sy(m*xb+b),
+  stroke:c,"stroke-width":w,"stroke-opacity":o,"stroke-linecap":"round"});}
+function axes(){
+  svg.appendChild(el("line",{class:"axis",x1:M.l,y1:M.t,x2:M.l,y2:M.t+plotH}));
+  svg.appendChild(el("line",{class:"axis",x1:M.l,y1:M.t+plotH,x2:M.l+plotW,y2:M.t+plotH}));
+  const xl=el("text",{class:"axislabel","text-anchor":"middle",x:M.l+plotW/2,y:H-12});xl.textContent=DATA.xLabel;svg.appendChild(xl);
+  const yl=el("text",{class:"axislabel","text-anchor":"middle",transform:`translate(15,${M.t+plotH/2}) rotate(-90)`});yl.textContent=DATA.yLabel;svg.appendChild(yl);
+}
+const dyn=el("g",{});axes();svg.appendChild(dyn);
+const xs=DATA.points.map(p=>p.x), ys=DATA.points.map(p=>p.y);
+function render(t){
+  dyn.replaceChildren();
+  // individuals fade as we move to the aggregate view
+  for(const p of DATA.points){
+    dyn.appendChild(el("circle",{cx:sx(p.x),cy:sy(p.y),r:3.2,
+      fill:DATA.groupColors[p.group],"fill-opacity":0.7*(1-t)+0.05}));
+  }
+  // individual-level fit (down) fades out
+  if(t<0.999) dyn.appendChild(seg(DATA.indFit.m,DATA.indFit.b,Math.min(...xs),Math.max(...xs),AMBER,1-t,3.4));
+  // group means + aggregate fit fade in
+  const gx=DATA.groupMeans.map(g=>g.x);
+  if(t>0.001){
+    dyn.appendChild(seg(DATA.meanFit.m,DATA.meanFit.b,Math.min(...gx),Math.max(...gx),TEAL,t,3.4));
+    DATA.groupMeans.forEach((g,i)=>{
+      dyn.appendChild(el("circle",{cx:sx(g.x),cy:sy(g.y),r:7,fill:DATA.groupColors[i],
+        stroke:"#fff","stroke-width":1.5,"fill-opacity":t}));
+    });
+  }
+  const txt=el("text",{class:"callout","text-anchor":"end",x:W-M.r,y:M.t+plotH-10});
+  txt.textContent = t<0.5 ? DATA.calloutPooled : DATA.calloutSplit;
+  txt.setAttribute("fill", t<0.5 ? AMBER : TEAL);
+  dyn.appendChild(txt);
+}
+const slider=document.getElementById("reveal"), st=document.getElementById("state");
+slider.addEventListener("input",()=>{const t=slider.value/100;render(t);
+  st.textContent=t<0.05?DATA.statePooled:t>0.95?DATA.stateSplit:`${slider.value}%`;});
+render(0); st.textContent=DATA.statePooled;
+</script>
+</body>
+</html>

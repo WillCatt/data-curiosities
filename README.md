@@ -2,34 +2,40 @@
 
 *Counterintuitive statistics, one chart at a time — bite-sized data-science tidbits,
 each "wait, what?" grounded in real published work. Built while working through the
-Claude Skilljar course; lives at [williamcatt.dev/projects/data-curiosities](https://williamcatt.dev/projects/data-curiosities.html).*
+Claude Skilljar course; lives at [williamcatt.dev/curiosities](https://williamcatt.dev/curiosities/).*
 
 Each piece takes a counter-intuitive statistical idea, grounds it in real published
-work, and explains it with hand-made charts (and, where it helps, a small
-interactive). Aimed at being fun for data and non-data people alike.
+work, and explains it with hand-made charts plus a small drag-to-reveal interactive.
+Aimed at being fun for data and non-data people alike.
 
 ## Pieces
 
 | # | Topic | What it shows |
 |---|-------|---------------|
-| 01 | [Simpson's Paradox](explorations/01-simpsons-paradox/notes.md) | A trend true in every age group reverses once you pool the groups. Interactive age-reveal slider + the real kidney-stone case. |
+| 01 | [Simpson's Paradox](explorations/01-simpsons-paradox/) | A trend true in every age group reverses once you pool the groups. Age-reveal slider + the real kidney-stone case. |
+| 02 | [Confounding](explorations/02-confounding/) | Ice-cream sales "cause" drownings until you hold temperature fixed. Storks-and-babies as the real case. |
+| 03 | [Ecological fallacy](explorations/03-ecological-fallacy/) | Group-level and individual-level correlations disagree in sign (Robinson 1950, literacy vs % foreign-born). |
+| 04 | [Berkson's paradox](explorations/04-berksons-collider/) | Selecting on a collider invents a negative link between independent traits. |
+| 05 | [Suppression effect](explorations/05-suppression/) | A real effect stays hidden until you account for a variable working against it. |
 
-See [`BACKLOG.md`](BACKLOG.md) for what's next.
+Queued: Lord's paradox, M-bias, noncollapsibility — see [`BACKLOG.md`](BACKLOG.md).
 
 ## Layout
 
 ```
-Skilljar Data Exploration/
-├── lib/style.py                      # shared palette + matplotlib rcParams (one source of truth)
+.
+├── lib/
+│   ├── style.py                    # shared palette + matplotlib rcParams (one source of truth)
+│   ├── pieces.py                   # shared builders: fits, the split figure, toy writers
+│   ├── reveal_scatter.template.html  # pooled-vs-bands interactive (Simpson's/confounding/suppression)
+│   ├── ecological.template.html      # individuals-vs-group-means interactive
+│   └── selection.template.html       # draggable selection cutoff (Berkson)
 ├── explorations/
-│   └── 01-simpsons-paradox/
-│       ├── build.py                  # generates the data, figures, and toy.html
-│       ├── notes.md                  # the explainer + cited sources
-│       ├── toy.html                  # self-contained interactive (opens in any browser)
-│       ├── toy.template.html         # template build.py inlines the data into
-│       ├── figures/                  # generated PNGs (gitignored)
-│       └── data/                     # generated data.json (gitignored)
-├── requirements.txt                  # numpy, matplotlib
+│   └── NN-<name>/
+│       ├── build.py                # data + static figure + toy.html for that piece
+│       ├── figures/                # generated PNGs
+│       └── toy.html                # self-contained interactive (opens in any browser)
+├── requirements.txt                # numpy, matplotlib
 └── BACKLOG.md
 ```
 
@@ -39,7 +45,7 @@ Skilljar Data Exploration/
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 
-# build a piece (regenerates its figures, data.json, and toy.html)
+# build a piece (regenerates its figure(s) and toy.html)
 .venv/bin/python explorations/01-simpsons-paradox/build.py
 
 # then open the interactive
