@@ -17,8 +17,12 @@ Aimed at being fun for data and non-data people alike.
 | 03 | [Ecological fallacy](explorations/03-ecological-fallacy/) | Group-level and individual-level correlations disagree in sign (Robinson 1950, literacy vs % foreign-born). |
 | 04 | [Berkson's paradox](explorations/04-berksons-collider/) | Selecting on a collider invents a negative link between independent traits. |
 | 05 | [Suppression effect](explorations/05-suppression/) | A real effect stays hidden until you account for a variable working against it. |
+| 06 | [Lord's paradox](explorations/06-lords-paradox/) | Change-score vs baseline-adjusted (ANCOVA) give two analysts opposite conclusions on the same data. |
+| 07 | [M-bias](explorations/07-m-bias/) | Adjusting for a pre-treatment collider (SAT) invents a link between prep and GPA. |
+| 08 | [Noncollapsibility](explorations/08-noncollapsibility/) | A constant conditional odds ratio of 2.0 reads as ~1.5 when pooled — with no confounding. |
 
-Queued: Lord's paradox, M-bias, noncollapsibility — see [`BACKLOG.md`](BACKLOG.md).
+All eight live at [williamcatt.dev/curiosities](https://williamcatt.dev/curiosities/). Further ideas
+(Datasaurus, survivorship bias, base-rate fallacy) in [`BACKLOG.md`](BACKLOG.md).
 
 ## Layout
 

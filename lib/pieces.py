@@ -189,3 +189,27 @@ def write_ecological_toy(out_path, payload):
                .replace("__HINT__", payload["hint"])
                .replace("__FOOTER__", payload["footer"]))
     Path(out_path).write_text(html)
+
+
+def write_noncollapse_toy(out_path, payload):
+    tpl = (LIB / "noncollapse.template.html").read_text()
+    html = (tpl.replace("__DATA__", json.dumps(payload))
+               .replace("__TITLE__", payload["title"])
+               .replace("__LEDE__", payload["lede"])
+               .replace("__LEFT__", payload["left"])
+               .replace("__RIGHT__", payload["right"])
+               .replace("__HINT__", payload["hint"])
+               .replace("__FOOTER__", payload["footer"]))
+    Path(out_path).write_text(html)
+
+
+def write_lord_toy(out_path, payload):
+    tpl = (LIB / "lord.template.html").read_text()
+    html = (tpl.replace("__DATA__", json.dumps(payload))
+               .replace("__TITLE__", payload["title"])
+               .replace("__LEDE__", payload["lede"])
+               .replace("__LEFT__", payload["left"])
+               .replace("__RIGHT__", payload["right"])
+               .replace("__HINT__", payload["hint"])
+               .replace("__FOOTER__", payload["footer"]))
+    Path(out_path).write_text(html)
